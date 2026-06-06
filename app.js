@@ -193,12 +193,30 @@ async function ghFetch(path) {
 
 async function fetchUser(username) {
   const clean = username.trim().replace(/^@/, "");
-  const [user, repos] = await Promise.all([
-    ghFetch(`/users/${clean}`),
-    ghFetch(`/users/${clean}/repos?per_page=100&sort=stars`),
-  ]);
+  const user = await ghFetch(`/users/${clean}`);
+  const repos = await fetchAllRepos(clean);
   if (!Array.isArray(repos)) return { user, repos: [] };
   return { user, repos };
+}
+
+async function fetchAllRepos(username) {
+  let page = 1;
+  let allRepos = [];
+
+  while (true) {
+    const batch = await ghFetch(
+      `/users/${username}/repos?per_page=100&page=${page}&sort=updated`,
+    );
+
+    if (!Array.isArray(batch) || batch.length === 0) break;
+
+    allRepos = [...allRepos, ...batch];
+    if (batch.length < 100) break; // no more pages
+
+    page++;
+  }
+
+  return allRepos;
 }
 
 /* ─── CALCULATIONS ─── */
@@ -470,9 +488,9 @@ function Dashboard({ data, onBack }) {
   const insights = genInsights(user, repos, langs);
   const totalStars = repos.reduce((a, r) => a + (r.stargazers_count || 0), 0);
   const totalForks = repos.reduce((a, r) => a + (r.forks_count || 0), 0);
-  const topRepos = [...repos]
-    .sort((a, b) => b.stargazers_count - a.stargazers_count)
-    .slice(0, 6);
+  const topRepos = [...repos].sort(
+    (a, b) => b.stargazers_count - a.stargazers_count,
+  );
 
   return h(
     "div",
