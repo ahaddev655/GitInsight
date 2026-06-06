@@ -483,13 +483,22 @@ function Landing({ onSearch }) {
 /* ─── DASHBOARD ─── */
 function Dashboard({ data, onBack }) {
   const { user, repos } = data;
+  const [page, setPage] = React.useState(1);
+  const perPage = 6;
   const langs = calcLangs(repos);
   const score = calcScore(user, repos);
   const insights = genInsights(user, repos, langs);
   const totalStars = repos.reduce((a, r) => a + (r.stargazers_count || 0), 0);
   const totalForks = repos.reduce((a, r) => a + (r.forks_count || 0), 0);
-  const topRepos = [...repos].sort(
+  const sortedRepos = [...repos].sort(
     (a, b) => b.stargazers_count - a.stargazers_count,
+  );
+
+  const totalPages = Math.ceil(sortedRepos.length / perPage);
+
+  const paginatedRepos = sortedRepos.slice(
+    (page - 1) * perPage,
+    page * perPage,
   );
 
   return h(
@@ -673,7 +682,7 @@ function Dashboard({ data, onBack }) {
     h(
       "div",
       { className: "repos-grid" },
-      topRepos.map((repo) =>
+      paginatedRepos.map((repo) =>
         h(
           "div",
           { key: repo.id, className: "repo-card" },
@@ -731,6 +740,59 @@ function Dashboard({ data, onBack }) {
               ),
           ),
         ),
+      ),
+    ),
+    h(
+      "div",
+      {
+        style: {
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          marginTop: "20px",
+          alignItems: "center",
+        },
+      },
+      h(
+        "button",
+        {
+          onClick: () => setPage((p) => Math.max(1, p - 1)),
+          disabled: page === 1,
+          style: {
+            padding: "6px 12px",
+            background: "#161B22",
+            border: "1px solid #30363D",
+            color: "#fff",
+            borderRadius: "6px",
+            cursor: page === 1 ? "not-allowed" : "pointer",
+            opacity: page === 1 ? 0.5 : 1,
+          },
+        },
+        "← Prev",
+      ),
+
+      h(
+        "span",
+        { style: { color: "#8B949E", fontSize: "0.9rem" } },
+        `Page ${page} of ${totalPages || 1}`,
+      ),
+
+      h(
+        "button",
+        {
+          onClick: () => setPage((p) => Math.min(totalPages, p + 1)),
+          disabled: page === totalPages || totalPages === 0,
+          style: {
+            padding: "6px 12px",
+            background: "#161B22",
+            border: "1px solid #30363D",
+            color: "#fff",
+            borderRadius: "6px",
+            cursor: page === totalPages ? "not-allowed" : "pointer",
+            opacity: page === totalPages ? 0.5 : 1,
+          },
+        },
+        "Next →",
       ),
     ),
   );
