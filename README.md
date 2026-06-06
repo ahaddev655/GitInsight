@@ -49,28 +49,9 @@ GitInsight uses a clean, developer-focused dark theme inspired by GitHub:
 
 src/
 │
-├── components/
-│ ├── SearchBar.jsx
-│ ├── ProfileCard.jsx
-│ ├── StatsGrid.jsx
-│ ├── LanguageChart.jsx
-│ ├── RepoCard.jsx
-│ ├── RepoList.jsx
-│ ├── GitHubScore.jsx
-│ └── Insights.jsx
-│
-├── pages/
-│ ├── Home.jsx
-│ └── Dashboard.jsx
-│
-├── services/
-│ └── githubApi.js
-│
-├── hooks/
-│ └── useGithubData.js
-│
-├── App.jsx
-└── main.jsx
+├── index.html
+├── style.css
+└── app.js
 
 ````
 
