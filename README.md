@@ -1,5 +1,3 @@
-Here is a more polished and professional version of your `README.md`:
-
 # GitInsight — GitHub Profile Analyzer
 
 GitInsight is a modern frontend web application built with React (JSX) and Tailwind CSS v4+ that analyzes any GitHub profile in real time using the GitHub REST API. It provides detailed developer insights, including repository statistics, language usage, and a custom developer score.
